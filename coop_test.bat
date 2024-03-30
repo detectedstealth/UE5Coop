@@ -1,0 +1,1 @@
+D:\Epic\UE_5.2\Engine\Binaries\Win64\UnrealEditor.exe D:\UnrealEngine\Projects\Udemy\UE5Coop\UE5Coop.uproject -game -ResX=960 -ResY=540 -log -WINDOWED -NOSTEAM

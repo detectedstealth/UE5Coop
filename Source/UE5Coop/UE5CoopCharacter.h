@@ -39,7 +39,12 @@ class AUE5CoopCharacter : public ACharacter
 
 public:
 	AUE5CoopCharacter();
-	
+
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
+	void ServerRPCFunction(int32 Param);
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* SphereMesh;
 
 protected:
 

@@ -24,6 +24,7 @@ void AUE5CoopGameMode::JoinLANGame()
 	APlayerController* PC = GetGameInstance()->GetFirstLocalPlayerController();
 	if (PC)
 	{
-		PC->ClientTravel("192.168.1.113", TRAVEL_Absolute);
+		// TODO: Add IP 
+		PC->ClientTravel("", TRAVEL_Absolute);
 	}
 }

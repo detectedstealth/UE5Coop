@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/StaticMeshActor.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,6 +50,45 @@ AUE5CoopCharacter::AUE5CoopCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+bool AUE5CoopCharacter::ServerRPCFunction_Validate(int32 Param)
+{
+	if (Param >= 0 && Param <= 100) return true;
+	return false;
+}
+
+void AUE5CoopCharacter::ServerRPCFunction_Implementation(int32 Param)
+{
+	if (HasAuthority())
+	{
+		// GEngine->AddOnScreenDebugMessage(1, 15.f, FColor::Red, TEXT("Server: ServerRPCFunction_Implementation"));
+		GEngine->AddOnScreenDebugMessage(1, 15.f, FColor::Red, FString::Printf(TEXT("Server arg: %d"), Param));
+		if (!SphereMesh) return;
+
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		AStaticMeshActor* StaticMeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnParameters);
+		if (StaticMeshActor)
+		{
+			// StaticMeshActor->bStaticMeshReplicateMovement = true;
+			StaticMeshActor->SetReplicates(true);
+			StaticMeshActor->SetReplicateMovement(true);
+			StaticMeshActor->SetMobility(EComponentMobility::Movable);
+			FVector SpawnLocation = GetActorLocation() + GetActorRotation().Vector() * 100.f + GetActorUpVector() * 50.f;
+			StaticMeshActor->SetActorLocation(SpawnLocation);
+			UStaticMeshComponent* StaticMeshComponent = StaticMeshActor->GetStaticMeshComponent();
+			if (StaticMeshComponent)
+			{
+				StaticMeshComponent->SetIsReplicated(true);
+				StaticMeshComponent->SetSimulatePhysics(true);
+				if (SphereMesh)
+				{
+					StaticMeshComponent->SetStaticMesh(SphereMesh);
+				}
+			}
+		}
+	}
 }
 
 void AUE5CoopCharacter::BeginPlay()
